@@ -1,0 +1,10 @@
+*~
+*.pyc
+*.db
+*.deb
+*.svg
+build/
+ddrexplorer/ddrexplorer/settings.py
+src/
+tmp/
+venv/
