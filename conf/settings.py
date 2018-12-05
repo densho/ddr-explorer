@@ -10,22 +10,35 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+import configparser
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+with open(os.path.join(BASE_DIR, '..', 'VERSION'), 'r') as f:
+    VERSION = f.read().strip()
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
+CONFIG_FILES = [
+    '/etc/ddr/ddrexplorer.cfg',
+    '/etc/ddr/ddrexplorer-local.cfg'
+]
+
+config = configparser.ConfigParser()
+configs_read = config.read(CONFIG_FILES)
+if not configs_read:
+    raise Exception('No config file!')
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '7c+@@@zeps_@4l^l*fu((@xhhd8+fc$r^y2(@0djre&+!2o++8'
+SECRET_KEY = config.get('app', 'secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config.getboolean('app', 'debug')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in config.get('app', 'allowed_hosts').split(',')
+]
 
 
 # Application definition
@@ -106,13 +119,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
