@@ -1,34 +1,77 @@
-from django.contrib.auth.models import User, Group
+from collections import OrderedDict
 
-from rest_framework import viewsets
+from django.contrib.auth.models import User
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 from . import models
-from . import serializers
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    """API endpoint that allows users to be viewed or edited.
+@api_view(['GET'])
+def index(request, format=None):
+    """API Index
+    Use the main DDR API (http://ddr.densho.org/api/0.2/) to browse collections.
+    POST api/v1/annotations/new/ to create a new annotation.
     """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = serializers.UserSerializer
+    data = OrderedDict()
+    data['types'] = reverse('api-types', request=request)
+    data['objects'] = reverse('api-objects', request=request)
+    return Response(data)
 
-
-class FieldViewSet(viewsets.ModelViewSet):
-    """API endpoint that allows fields to be viewed or edited.
+@api_view(['GET'])
+def types(request):
     """
-    queryset = models.Field.objects.all()
-    serializer_class = serializers.FieldSerializer
-
-
-class DDRObjectViewSet(viewsets.ModelViewSet):
-    """API endpoint that allows pointers to DDR objects to be viewed or edited.
+    Lists valid annotation types.
     """
-    queryset = models.DDRObject.objects.all()
-    serializer_class = serializers.DDRObjectSerializer
+    return Response(
+        models.Field.fields(request)
+    )
 
-
-class AnnotationViewSet(viewsets.ModelViewSet):
-    """API endpoint that allows annotations to be viewed or edited.
+@api_view(['GET'])
+def objects(request):
     """
-    queryset = models.Annotation.objects.all()
-    serializer_class = serializers.AnnotationSerializer
+    Lists objects with annotations.
+    """
+    return Response(
+        models.objects_all(request)
+    )
+
+@api_view(['GET'])
+def object_detail(request, object_id):
+    """
+    Lists all annotations for object.
+    POST api/v1/annotations/new/ to create a new annotation.
+    """
+    return Response(
+        models.Annotation.for_object(object_id, request)
+    )
+
+@api_view(['GET'])
+def user(request, username):
+    """
+    Lists all objects annotated by user.
+    """
+    # TODO 404 if not logged in or not this user
+    user = User.objects.get(username=username)
+    data = OrderedDict()
+    data['username'] = user.username
+    data['objects'] = models.Annotation.for_user(user, request)
+    return Response(data)
+
+@api_view(['GET', 'POST', 'DELETE'])
+def annotation(request, annotation_id=None):
+    """
+    POST api/v1/annotations/new/ to create a new annotation.
+    POST api/v1/annotations/ID/ to edit an existing one.
+    Users may only edit their own annotations.
+    Use annotation types from /api/v1/types/.
+    """
+    # TODO POST,DELETE only if logged in AND matches annotation user
+    if annotation_id:
+        return Response(
+            models.Annotation.objects.get(id=annotation_id).dict(request)
+        )
+    # new Annotation
+    return Response({})

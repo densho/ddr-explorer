@@ -11,5 +11,6 @@ django-registration                # BSD      y
 djangorestframework                # BSD      y
 gunicorn                           # MIT      y
 redis                              # MIT      y
+requests
 
 bpython
