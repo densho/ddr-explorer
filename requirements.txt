@@ -7,6 +7,7 @@
 django                             # MIT      y
 django-redis                       # BSD      y
 django-redis-sessions              # BSD      y
+django-registration                # BSD      y
 djangorestframework                # BSD      y
 gunicorn                           # MIT      y
 redis                              # MIT      y
