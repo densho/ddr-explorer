@@ -21,5 +21,6 @@ urlpatterns = [
     path(r'api/v1/users/<slug:username>/', views.user, name='api-user'),
     path(r'api/v1/objects/', views.objects, name='api-objects'),
     path(r'api/v1/types/', views.types, name='api-types'),
-    path(r'api/v1/', views.index, name='api-index'),
+    path(r'api/v1/', views.api_index, name='api-index'),
+    path('', views.index, name='index'),
 ]

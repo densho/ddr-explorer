@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -9,11 +10,17 @@ from rest_framework.reverse import reverse
 from . import models
 
 
+def index(request):
+    return HttpResponseRedirect(
+        reverse('api-index')
+    )
+
 @api_view(['GET'])
-def index(request, format=None):
+def api_index(request, format=None):
     """API Index
     Use the main DDR API (http://ddr.densho.org/api/0.2/) to browse collections.
-    POST api/v1/annotations/new/ to create a new annotation.
+    Register /accounts/register/
+    Login /api/v1/auth/login/
     """
     data = OrderedDict()
     data['types'] = reverse('api-types', request=request)
