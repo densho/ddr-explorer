@@ -220,9 +220,9 @@ migrate:
 	chmod -R 755 $(LOG_BASE)
 
 
-install-static: install-restframework
+install-static: install-restframework install-rest-swagger
 
-clean-static: clean-restframework
+clean-static: clean-restframework clean-rest-swagger
 
 install-restframework:
 	@echo ""
@@ -230,8 +230,17 @@ install-restframework:
 	-mkdir -p $(MEDIA_BASE)
 	cp -R $(VIRTUALENV)/lib/$(PYTHON_VERSION)/site-packages/rest_framework/static/rest_framework/ $(STATIC_ROOT)/
 
+install-rest-swagger:
+	@echo ""
+	@echo "rest-swagger assets -----------------------------------------------------"
+	-mkdir -p $(MEDIA_BASE)
+	cp -R $(VIRTUALENV)/lib/$(PYTHON_VERSION)/site-packages/rest_framework_swagger/static/rest_framework_swagger/ $(STATIC_ROOT)/
+
 clean-restframework:
 	-rm -Rf $(STATIC_ROOT)/rest_framework/
+
+clean-rest-swagger:
+	-rm -Rf $(STATIC_ROOT)/rest_framework_swagger/
 
 
 install-configs:
