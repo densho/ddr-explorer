@@ -36,6 +36,10 @@ CONF_LOCAL=$(CONF_BASE)/ddrexplorer-local.cfg
 
 LOG_BASE=/var/log/ddr
 
+MEDIA_BASE=/var/www/ddrexplorer
+MEDIA_ROOT=$(MEDIA_BASE)/media
+STATIC_ROOT=$(MEDIA_BASE)/static
+
 SUPERVISOR_GUNICORN_CONF=/etc/supervisor/conf.d/ddrexplorer.conf
 NGINX_CONF=/etc/nginx/sites-available/ddrexplorer.conf
 NGINX_CONF_LINK=/etc/nginx/sites-enabled/ddrexplorer.conf
@@ -180,6 +184,14 @@ install-ddr-explorer: clean-ddr-explorer
 	apt-get --assume-yes install imagemagick sqlite3 supervisor
 	source $(VIRTUALENV)/bin/activate; \
 	pip3 install -U -r $(INSTALL_PUBLIC)/requirements.txt
+# static dir
+	-mkdir $(STATIC_ROOT)
+	chown -R ddr.root $(STATIC_ROOT)
+	chmod -R 755 $(STATIC_ROOT)
+# media dir
+	-mkdir $(MEDIA_ROOT)
+	chown -R ddr.root $(MEDIA_ROOT)
+	chmod -R 755 $(MEDIA_ROOT)
 # logs dir
 	-mkdir $(LOG_BASE)
 	chown -R ddr.root $(LOG_BASE)
@@ -206,6 +218,20 @@ migrate:
 	-chmod -R 750 $(SQLITE_BASE)
 	chown -R ddr.root $(LOG_BASE)
 	chmod -R 755 $(LOG_BASE)
+
+
+install-static: install-restframework
+
+clean-static: clean-restframework
+
+install-restframework:
+	@echo ""
+	@echo "rest-framework assets ---------------------------------------------------"
+	-mkdir -p $(MEDIA_BASE)
+	cp -R $(VIRTUALENV)/lib/$(PYTHON_VERSION)/site-packages/rest_framework/static/rest_framework/ $(STATIC_ROOT)/
+
+clean-restframework:
+	-rm -Rf $(STATIC_ROOT)/rest_framework/
 
 
 install-configs:
