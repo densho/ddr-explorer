@@ -1,6 +1,8 @@
 from django.urls import include, path, re_path
 
 #from rest_framework import routers
+from rest_framework_swagger.views import get_swagger_view
+schema_view = get_swagger_view(title='Pastebin API')
 
 from . import views
 
@@ -22,5 +24,5 @@ urlpatterns = [
     path(r'api/v1/objects/', views.objects, name='api-objects'),
     path(r'api/v1/types/', views.types, name='api-types'),
     path(r'api/v1/', views.api_index, name='api-index'),
-    path('', views.index, name='index'),
+    path(r'', schema_view)
 ]

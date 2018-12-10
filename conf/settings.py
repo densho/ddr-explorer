@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     #
     'django_registration',
     'rest_framework',
+    'rest_framework_swagger',
     #
     'explorer',
 ]
