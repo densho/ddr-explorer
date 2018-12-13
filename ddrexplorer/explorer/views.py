@@ -1,15 +1,18 @@
 from collections import OrderedDict
 
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.views import APIView
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from . import models
+from . import serializers
 
 
 def index(request):
@@ -30,7 +33,7 @@ def api_index(request, format=None):
     return Response(data)
 
 @api_view(['GET'])
-def types(request):
+def types(request, format=None):
     """
     Lists valid annotation types.
     """
@@ -39,7 +42,7 @@ def types(request):
     )
 
 @api_view(['GET'])
-def objects(request):
+def objects(request, format=None):
     """
     Lists objects with annotations.
     """
@@ -48,7 +51,7 @@ def objects(request):
     )
 
 @api_view(['GET'])
-def object_detail(request, object_id):
+def object_detail(request, object_id, format=None):
     """
     Lists all annotations for object.
     POST api/v1/annotations/new/ to create a new annotation.
@@ -58,7 +61,7 @@ def object_detail(request, object_id):
     )
 
 @api_view(['GET'])
-def user(request, username):
+def user(request, username, format=None):
     """
     Lists all objects annotated by user.
     """
@@ -69,18 +72,80 @@ def user(request, username):
     data['objects'] = models.Annotation.for_user(user, request)
     return Response(data)
 
-@api_view(['GET', 'POST', 'DELETE'])
-def annotation(request, annotation_id=None):
+
+class Annotations(APIView):
     """
-    POST api/v1/annotations/new/ to create a new annotation.
-    POST api/v1/annotations/ID/ to edit an existing one.
-    Users may only edit their own annotations.
-    Use annotation types from /api/v1/types/.
+    Lists Annotations belonging to logged-in User
     """
-    # TODO POST,DELETE only if logged in AND matches annotation user
-    if annotation_id:
+    def get(self, request, format=None):
+        """
+        """
+        if not request.user:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data = OrderedDict()
+        data['username'] = request.user.username
+        data['objects'] = models.Annotation.for_user(request.user, request)
+        return Response(data)
+
+    def post(self, request, format=None):
+        """
+        Create a new Annotation
+        """
+        data = {
+            'user_id': request.user.id,
+            'object_id': object_id,
+            'field_id': field_id,
+            'content': request.data,
+        }
+        serializer = serializers.AnnotationSerializer(
+            data=data,
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AnnotationDetail(APIView):
+    """
+    """
+    def get_object(self, annotation_id):
+        try:
+            return models.Annotation.objects.get(id=annotation_id)
+        except Annotation.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, annotation_id, format=None):
+        """
+        Get an Annotation
+        """
         return Response(
             models.Annotation.objects.get(id=annotation_id).dict(request)
         )
-    # new Annotation
-    return Response({})
+
+    def post(self, request, annotation_id, format=None):
+        """
+        Update an Annotation
+        """
+        data = {
+            'user_id': request.user.id,
+            'object_id': object_id,
+            'field_id': field_id,
+            'content': request.data,
+        }
+        serializer = serializers.AnnotationSerializer(
+            self.get_object(annotation_id),
+            request.data,
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request, annotation_id, format=None):
+        """
+        Delete an Annotation
+        """
+        a = self.get_object(annotation_id)
+        a.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
