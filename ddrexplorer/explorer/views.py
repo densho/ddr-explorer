@@ -87,6 +87,20 @@ class Annotations(APIView):
         data['objects'] = models.Annotation.for_user(request.user, request)
         return Response(data)
 
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter(
+            'user_id', description='string',
+            in_=openapi.IN_FORM, type=openapi.TYPE_STRING),
+        openapi.Parameter(
+            'object_id', description='string',
+            in_=openapi.IN_FORM, type=openapi.TYPE_STRING),
+        openapi.Parameter(
+            'field_id', description='string',
+            in_=openapi.IN_FORM, type=openapi.TYPE_STRING),
+        openapi.Parameter(
+            'content', description='JSON document containing annotation.',
+            in_=openapi.IN_FORM, type=openapi.TYPE_STRING),
+    ])
     def post(self, request, format=None):
         """
         Create a new Annotation
@@ -123,6 +137,11 @@ class AnnotationDetail(APIView):
             models.Annotation.objects.get(id=annotation_id).dict(request)
         )
 
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter(
+            'content', description='JSON document containing annotation.',
+            in_=openapi.IN_FORM, type=openapi.TYPE_STRING),
+    ])
     def post(self, request, annotation_id, format=None):
         """
         Update an Annotation
