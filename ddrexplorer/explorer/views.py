@@ -22,10 +22,12 @@ def index(request):
 
 @api_view(['GET'])
 def api_index(request, format=None):
-    """API Index
+    """
+    API Index
     Use the main DDR API (http://ddr.densho.org/api/0.2/) to browse collections.
-    Register /accounts/register/
-    Login /api/v1/auth/login/
+    /accounts/register/ -- Register
+    /api/v1/auth/login/ -- Login
+    /api/swagger/ -- Swagger
     """
     data = OrderedDict()
     data['types'] = reverse('api-types', request=request)
@@ -54,7 +56,6 @@ def objects(request, format=None):
 def object_detail(request, object_id, format=None):
     """
     Lists all annotations for object.
-    POST api/v1/annotations/new/ to create a new annotation.
     """
     return Response(
         models.Annotation.for_object(object_id, request)
