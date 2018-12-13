@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     #
     'django_registration',
     'rest_framework',
-    'rest_framework_swagger',
+    'drf_yasg',
     #
     'explorer',
 ]
@@ -148,3 +148,12 @@ REST_FRAMEWORK = {
 
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'basic': {
+            'type': 'basic'
+        }
+    },
+    'DEFAULT_INFO': 'explorer.urls.api_info',
+}

@@ -220,9 +220,9 @@ migrate:
 	chmod -R 755 $(LOG_BASE)
 
 
-install-static: install-restframework install-rest-swagger
+install-static: install-restframework install-swagger
 
-clean-static: clean-restframework clean-rest-swagger
+clean-static: clean-restframework clean-swagger
 
 install-restframework:
 	@echo ""
@@ -230,17 +230,17 @@ install-restframework:
 	-mkdir -p $(MEDIA_BASE)
 	cp -R $(VIRTUALENV)/lib/$(PYTHON_VERSION)/site-packages/rest_framework/static/rest_framework/ $(STATIC_ROOT)/
 
-install-rest-swagger:
+install-swagger:
 	@echo ""
 	@echo "rest-swagger assets -----------------------------------------------------"
 	-mkdir -p $(MEDIA_BASE)
-	cp -R $(VIRTUALENV)/lib/$(PYTHON_VERSION)/site-packages/rest_framework_swagger/static/rest_framework_swagger/ $(STATIC_ROOT)/
+	cp -R $(VIRTUALENV)/lib/$(PYTHON_VERSION)/site-packages/drf_yasg/static/drf_yasg/ $(STATIC_ROOT)/
 
 clean-restframework:
 	-rm -Rf $(STATIC_ROOT)/rest_framework/
 
-clean-rest-swagger:
-	-rm -Rf $(STATIC_ROOT)/rest_framework_swagger/
+clean-swagger:
+	-rm -Rf $(STATIC_ROOT)/drf_yasg/
 
 
 install-configs:
@@ -392,4 +392,5 @@ deb-stretch:
 	requirements.txt=$(DEB_BASE)   \
 	venv=$(DEB_BASE)   \
 	venv/ddrexplorer/lib/$(PYTHON_VERSION)/site-packages/rest_framework/static/rest_framework=$(STATIC_ROOT)  \
+	venv/ddrexplorer/lib/$(PYTHON_VERSION)/site-packages/drf_yasg/static/=$(STATIC_ROOT)  \
 	VERSION=$(DEB_BASE)
