@@ -130,9 +130,10 @@ class Annotation(models.Model):
         data['object_id'] = reverse(
             'api-object', args=(self.object_id,), request=request
         )
-        data['username'] = reverse(
-            'api-user', args=(self.user.username,), request=request
-        )
+        #data['username'] = reverse(
+        #    'api-user', args=(self.user.username,), request=request
+        #)
+        data['username'] = self.user.username
         data['field_id'] = self.field_id
         data['created'] = self.created
         data['lastmod'] = self.lastmod
