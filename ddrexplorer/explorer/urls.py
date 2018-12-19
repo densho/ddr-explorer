@@ -6,27 +6,27 @@ from rest_framework import permissions
 
 from . import views
 
-#router = routers.DefaultRouter()
-#router.register(r'users', views.UserViewSet)
-#router.register(r'fields', views.FieldViewSet)
-#router.register(r'objects', views.DDRObjectViewSet)
-#router.register(r'annotations', views.AnnotationViewSet)
-
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
+API_DESCRIPTION = """
+API DESCRIPTION TEXT GOES HERE.
+"""
 
 api_info = openapi.Info(
     title="DDR Explorer API",
     default_version='v1',
-    description="DESCRIPTION TEXT HERE",
-    terms_of_service="https://www.google.com/policies/terms/",
+    description=API_DESCRIPTION,
+    terms_of_service="http://ddr.densho.org/terms/",
     contact=openapi.Contact(email="info@densho.org"),
-    license=openapi.License(name="TBD"),
+    license=openapi.License(name="License TBD"),
 )
 schema_view = get_schema_view(
     #api_info,
-    #validators=['flex', 'ssv'],
+    url=settings.SWAGGER_BASE_URL,
+    #patterns=
+    #urlconf=
     public=True,
+    #validators=['flex', 'ssv'],
+    #generator_class=
+    #authentication_classes=
     permission_classes=(permissions.AllowAny,),
 )
 
