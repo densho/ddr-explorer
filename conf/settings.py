@@ -11,12 +11,12 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import configparser
-import os
+from pathlib import Path
+from urllib.parse import urljoin
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).parent.parent
 
-with open(os.path.join(BASE_DIR, '..', 'VERSION'), 'r') as f:
+with Path.joinpath(BASE_DIR, '..', 'VERSION').open('r') as f:
     VERSION = f.read().strip()
 
 CONFIG_FILES = [
@@ -34,6 +34,8 @@ SECRET_KEY = config.get('app', 'secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config.getboolean('app', 'debug')
+
+BASE_URL = config.get('app', 'base_url')
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -149,6 +151,7 @@ REST_FRAMEWORK = {
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 
+SWAGGER_BASE_URL = urljoin(BASE_URL, '/api/swagger/')
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'basic': {
