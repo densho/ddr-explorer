@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path, re_path
 
 from drf_yasg.views import get_schema_view
@@ -30,32 +31,30 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
-urlpatterns = [
-    path(r'api/v1/auth/',
-         include('rest_framework.urls', namespace='rest_framework')
-    ),
-    path(r'api/v1/objects/<slug:object_id>/',
+api_urlpatterns = [
+    path(r'objects/<slug:object_id>/',
          views.object_detail, name='api-object'
     ),
-    path(r'api/v1/annotation/<slug:annotation_id>/',
+    path(r'annotation/<slug:annotation_id>/',
          views.AnnotationDetail.as_view(), name='api-annotation'
     ),
-    path(r'api/v1/annotations/',
+    path(r'annotations/',
          views.Annotations.as_view(), name='api-annotations'
     ),
-    path(r'api/v1/objects/', views.objects, name='api-objects'),
-    path(r'api/v1/types/', views.types, name='api-types'),
-    path(r'api/v1/', views.api_index, name='api-index'),
-    
+    path(r'objects/', views.objects, name='api-objects'),
+    path(r'types/', views.types, name='api-types'),
+    path('', views.api_index, name='api-index'),
+]
+
+urlpatterns = [
+    path(r'api/accounts/', include('rest_registration.api.urls')),
+    path(r'api/auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path(r'api/v1/', include(api_urlpatterns)),
     path(r'api/swagger<slug:format>\.json|\.yaml)',
          schema_view.without_ui(cache_timeout=0), name='schema-json'
     ),
     path(r'api/swagger/',
          schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'
     ),
-    path(r'api/redoc/',
-         schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'
-    ),
-    
-    path(r'', views.index)
+    path('', views.index),
 ]

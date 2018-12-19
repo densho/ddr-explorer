@@ -10,6 +10,7 @@ django-redis-sessions              # BSD      y
 django-registration                # BSD      y
 djangorestframework                # BSD      y
 drf-yasg
+django-rest-registration           # MIT      y
 gunicorn                           # MIT      y
 redis                              # MIT      y
 requests

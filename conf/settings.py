@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     #
     'django_registration',
     'rest_framework',
+    'rest_registration',
     'drf_yasg',
     #
     'explorer',
@@ -141,6 +142,18 @@ MEDIA_ROOT = config.get('app', 'media_root')
 MEDIA_URL = '/media/'
 
 
+# SMTP
+
+EMAIL_ENABLED       = config.get('app', 'email_enabled')
+EMAIL_HOST          = config.get('app', 'email_host')
+EMAIL_PORT          = config.get('app', 'email_port')
+EMAIL_HOST_USER     = config.get('app', 'email_host_user')
+EMAIL_HOST_PASSWORD = config.get('app', 'email_host_password')
+EMAIL_USE_TLS       = config.getboolean('app', 'email_use_tls')
+EMAIL_USE_SSL       = config.getboolean('app', 'email_use_ssl')
+DEFAULT_FROM_EMAIL  = 'ddrexplorer@densho.org'
+
+
 # REST interface
 
 REST_FRAMEWORK = {
@@ -159,4 +172,13 @@ SWAGGER_SETTINGS = {
         }
     },
     'DEFAULT_INFO': 'explorer.urls.api_info',
+}
+
+REST_REGISTRATION = {
+    'REGISTER_VERIFICATION_ENABLED':       EMAIL_ENABLED,
+    'REGISTER_VERIFICATION_URL':           urljoin(BASE_URL, '/verify-user/'),
+    'VERIFICATION_FROM_EMAIL':             'no-reply@by.densho.org',
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': EMAIL_ENABLED,
+    'REGISTER_EMAIL_VERIFICATION_URL':     urljoin(BASE_URL, '/verify-email/'),
+    'RESET_PASSWORD_VERIFICATION_URL':     urljoin(BASE_URL, '/reset-password/'),
 }
