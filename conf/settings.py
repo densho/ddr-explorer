@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     #
     'django_registration',
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_registration',
     'drf_yasg',
     #
@@ -157,6 +158,11 @@ DEFAULT_FROM_EMAIL  = 'ddrexplorer@densho.org'
 # REST interface
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }

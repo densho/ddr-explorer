@@ -5,6 +5,8 @@ from django.http import Http404, HttpResponseRedirect
 
 from rest_framework import exceptions
 from rest_framework import status
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -173,3 +175,36 @@ class AnnotationDetail(APIView):
         a = self.get_object(annotation_id)
         a.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CustomAuthToken(ObtainAuthToken):
+    """
+    Wrapper around rest_framework.authtoken.views.obtain_auth_token that works
+    with Swagger UI.
+    see https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
+    """
+
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter(
+            'username', description='string',
+            in_=openapi.IN_FORM, type=openapi.TYPE_STRING),
+        openapi.Parameter(
+            'password', description='string',
+            in_=openapi.IN_FORM, type=openapi.TYPE_STRING),
+    ])
+    def post(self, request, *args, **kwargs):
+        """Get a token for the given username and password.
+        
+        POST with form fields "username" and "password".
+        Can't get it to work with Swagger UI sorry.
+        """
+        serializer = self.serializer_class(
+            data=request.data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+        })
