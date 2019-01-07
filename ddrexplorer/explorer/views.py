@@ -7,7 +7,7 @@ from rest_framework import exceptions
 from rest_framework import status
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -139,8 +139,9 @@ class AnnotationDetail(APIView):
         """
         Get an Annotation
         """
+        a = self.get_object(annotation_id)
         return Response(
-            models.Annotation.objects.get(id=annotation_id).dict(request)
+            a.dict(request)
         )
     
     @permission_classes((IsAuthenticated, ))
@@ -153,14 +154,17 @@ class AnnotationDetail(APIView):
         """
         Update an Annotation
         """
+        a = self.get_object(annotation_id)
+        if not (request.user.id == a.user_id):
+            raise exceptions.PermissionDenied(detail=None, code=None)
         data = {
             'user_id': request.user.id,
-            'object_id': object_id,
+            'object_id': annotation_id,
             'field_id': field_id,
             'content': request.data,
         }
         serializer = serializers.AnnotationSerializer(
-            self.get_object(annotation_id),
+            annotation,
             request.data,
         )
         if serializer.is_valid():
@@ -174,6 +178,8 @@ class AnnotationDetail(APIView):
         Delete an Annotation
         """
         a = self.get_object(annotation_id)
+        if not (request.user.id == a.user_id):
+            raise exceptions.PermissionDenied(detail=None, code=None)
         a.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
