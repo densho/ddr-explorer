@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
@@ -81,17 +82,17 @@ class Annotations(APIView):
     """
     Lists Annotations belonging to logged-in User
     """
+    @permission_classes((IsAuthenticated, ))
     def get(self, request, format=None):
         """
         Lists Annotations belonging to the logged-in User
         """
-        if (not request.user) or (not request.user.username):
-            raise exceptions.NotAuthenticated(detail='Requires user login.', code=None)
         data = OrderedDict()
         data['username'] = request.user.username
         data['objects'] = models.Annotation.for_user(request.user, request)
         return Response(data)
 
+    @permission_classes((IsAuthenticated, ))
     @swagger_auto_schema(manual_parameters=[
         openapi.Parameter(
             'user_id', description='string',
@@ -110,8 +111,6 @@ class Annotations(APIView):
         """
         Create a new Annotation for the logged-in user.
         """
-        if (not request.user) or (not request.user.username):
-            raise exceptions.NotAuthenticated(detail='Requires user login.', code=None)
         data = {
             'user_id': request.user.id,
             'object_id': object_id,
@@ -143,7 +142,8 @@ class AnnotationDetail(APIView):
         return Response(
             models.Annotation.objects.get(id=annotation_id).dict(request)
         )
-
+    
+    @permission_classes((IsAuthenticated, ))
     @swagger_auto_schema(manual_parameters=[
         openapi.Parameter(
             'content', description='JSON document containing annotation.',
@@ -168,6 +168,7 @@ class AnnotationDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+    @permission_classes((IsAuthenticated, ))
     def delete(self, request, annotation_id, format=None):
         """
         Delete an Annotation
