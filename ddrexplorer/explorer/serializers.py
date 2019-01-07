@@ -10,7 +10,11 @@ class AnnotationSerializer(serializers.Serializer):
     object_id = serializers.CharField(required=True)
     field_id = serializers.CharField(required=True)
     content = serializers.JSONField(required=True)
-        
+    
+    class Meta:
+      model = models.Annotation
+      fields = ('id', 'user_id', 'object_id', 'field_id', 'content',)
+    
     def create(self, validated_data):
         """
         Create and return a new `Annotation` instance given validated data.
