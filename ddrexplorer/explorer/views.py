@@ -3,6 +3,7 @@ from collections import OrderedDict
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponseRedirect
 
+from rest_framework import exceptions
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -80,9 +81,10 @@ class Annotations(APIView):
     """
     def get(self, request, format=None):
         """
+        Lists Annotations belonging to the logged-in User
         """
-        if not request.user:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if (not request.user) or (not request.user.username):
+            raise exceptions.NotAuthenticated(detail='Requires user login.', code=None)
         data = OrderedDict()
         data['username'] = request.user.username
         data['objects'] = models.Annotation.for_user(request.user, request)
@@ -104,8 +106,10 @@ class Annotations(APIView):
     ])
     def post(self, request, format=None):
         """
-        Create a new Annotation
+        Create a new Annotation for the logged-in user.
         """
+        if (not request.user) or (not request.user.username):
+            raise exceptions.NotAuthenticated(detail='Requires user login.', code=None)
         data = {
             'user_id': request.user.id,
             'object_id': object_id,
