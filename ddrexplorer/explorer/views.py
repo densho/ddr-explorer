@@ -24,6 +24,11 @@ def index(request):
         reverse('api-index')
     )
 
+def verify_user(request):
+    return HttpResponseRedirect(
+        reverse('rest_registration:verify-registration')
+    )
+
 @api_view(['GET'])
 def api_index(request, format=None):
     """

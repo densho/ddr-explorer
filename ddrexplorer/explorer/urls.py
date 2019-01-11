@@ -47,6 +47,9 @@ api_urlpatterns = [
 ]
 
 urlpatterns = [
+    # redirects
+    path(r'verify-user/', views.verify_user),
+    
     path(r'api/accounts/token/', views.CustomAuthToken.as_view()),
     path(r'api/accounts/', include('rest_registration.api.urls')),
     path(r'api/auth/', include('rest_framework.urls', namespace='rest_framework')),
