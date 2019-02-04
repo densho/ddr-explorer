@@ -5,6 +5,7 @@
 
                                    # LICENSE  Python3
 django                             # MIT      y
+django-cors-headers                # MIT      y
 django-redis                       # BSD      y
 django-redis-sessions              # BSD      y
 django-registration                # BSD      y

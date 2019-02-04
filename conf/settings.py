@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #
+    'corsheaders',
     'django_registration',
     'rest_framework',
     'rest_framework.authtoken',
@@ -63,10 +64,12 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -188,3 +191,12 @@ REST_REGISTRATION = {
     'REGISTER_EMAIL_VERIFICATION_URL':     urljoin(BASE_URL, '/verify-email/'),
     'RESET_PASSWORD_VERIFICATION_URL':     urljoin(BASE_URL, '/reset-password/'),
 }
+
+# django-cors-headers (see https://github.com/ottoyiu/django-cors-headers/)
+CORS_ORIGIN_ALLOW_ALL = config.get('app', 'cors_origin_allow_all')
+CORS_ORIGIN_WHITELIST = [
+    domain.strip()
+    for domain in config.get('app', 'cors_origin_whitelist').split(',')
+]
+## Only send CORS headers for API.
+#CORS_URLS_REGEX = r'^/api/.*$'
