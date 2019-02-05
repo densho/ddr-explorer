@@ -193,7 +193,7 @@ REST_REGISTRATION = {
 }
 
 # django-cors-headers (see https://github.com/ottoyiu/django-cors-headers/)
-CORS_ORIGIN_ALLOW_ALL = config.get('app', 'cors_origin_allow_all')
+CORS_ORIGIN_ALLOW_ALL = config.getboolean('app', 'cors_origin_allow_all')
 CORS_ORIGIN_WHITELIST = [
     domain.strip()
     for domain in config.get('app', 'cors_origin_whitelist').split(',')
